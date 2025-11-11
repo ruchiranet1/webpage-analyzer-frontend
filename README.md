@@ -1,12 +1,12 @@
 # 🌍 Web Page Analyzer Frontend
 
-This is a Next.js application that provides a user interface for analyzing web pages. It securely communicates with the dedicated **Web Page Analyzer Service (Backend)** to perform a detailed, synchronous analysis of a given URL.
+This is a web application that provides a user interface for analyzing web pages. It securely communicates with the dedicated **Web Page Analyzer Service (Backend)** to perform a detailed, synchronous analysis of a given URL.
 
 ---
 
 ## ✨ Features
 
-* **Secure API Proxying:** Uses a Next.js API route (`/api/analyze`) to securely pass the URL and necessary credentials (like the `AUTH_TOKEN`) to the backend service.
+* **Secure API Proxying:** Uses a web API route (`/api/analyze`) to securely pass the URL and necessary credentials (like the `AUTH_TOKEN`) to the backend service.
 * **Synchronous Analysis:** Designed to wait for and immediately display the final analysis results (HTML version, title, headings, links, login form presence).
 * **Idempotency Key:** Implements a client-side mechanism to generate and utilize an `Idempotency-Key` to prevent the accidental duplication of analysis requests to the backend within a 30-second window.
 * **Rich UI Display:** Presents the analysis results using clear tables, charts, and status indicators built with React and Tailwind CSS.
@@ -36,7 +36,7 @@ Before running the application, ensure you have the following in place:
     * **Setup & Run Backend:** Clone the backend repository and start the service on port `8080` as per its instructions:
 
         ```bash
-        git clone [https://github.com/ruchiranet1/webpage-analyzer-service.git](https://github.com/ruchiranet1/webpage-analyzer-service.git)
+        git clone https://github.com/ruchiranet1/webpage-analyzer-service.git
         # Follow the instructions in the backend's README to run the service (e.g., 'make run').
         ```
 
@@ -48,13 +48,13 @@ The application requires credentials to authenticate with the backend service. C
 
 | Variable | Description | Example Value | Visibility |
 | :--- | :--- | :--- | :--- |
-| `NEXT_PUBLIC_API_URL` | The base URL of your backend API. | `http://localhost:8080` | **Client & Server** |
+| `API_URL` | The base URL of your backend API. | `http://localhost:8080` | **Client & Server** |
 | `AUTH_TOKEN` | The JWT used in the `Authorization` header. | `myuser1` | **Server Only** |
 
 ***Example `.env.local` contents:***
 
 ```text
-NEXT_PUBLIC_API_URL=http://localhost:8080
+API_URL=http://localhost:8080
 AUTH_TOKEN=myuser1
 ```
 
@@ -71,21 +71,23 @@ npm run dev
 
 The application will be accessible at http://localhost:3000.
 
-## 💻 Code Structure
-```code
-api/analyze/route.ts (API Route)
-```
 
-This server-side route acts as a secure proxy between the frontend and the external analysis service. 
+### 3 Deployment (Docker)
 
-It handles the POST request, loads the server-side credentials (EMAIL, AUTH_TOKEN), and forwards the request to the synchronous backend endpoint (/api/v1/analyzes) along with the client-provided Idempotency-Key.
+This application uses a multi-stage Docker build based on **Node 20-alpine** for efficient production deployment.
 
-Note : With the /api/v1/analyzes/async API, results will email to the users EMAIL address. (next phase task)
+#### Building and Running the Container
 
-```code
-PageAnalyzer.tsx (Frontend Component)
-```
+1.  **Build the image:**
+    ```bash
+    docker build -t webpage-analyzer-frontend .
+    ```
 
-This is the main client component that manages the user interaction and state. It features a URL input, an analysis button, a 30-second countdown for the Idempotency-Key reset, and a structured display for the analysis results. 
+2.  **Run the container:**
+    *The server-side code requires the credentials from `.env.local` at runtime.*
+    ```bash
+    docker run -d -p 3000:3000 --env-file .env.local webpage-analyzer-frontend
+    ```
 
-It handles the loading state, error display, and rendering of all analysis metrics in an accessible table format.
+The frontend will be available at `http://localhost:3000`.
+
