@@ -12,20 +12,12 @@ export async function POST(request: NextRequest) {
     }
 
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'
+    // ideally email should get from logged user
     const email = process.env.EMAIL
-    const authToken = process.env.AUTH_TOKEN
-
-    if (!email || !authToken) {
-      return NextResponse.json(
-        { error: 'Server configuration error: Missing credentials' },
-        { status: 500 }
-      )
-    }
 
     const response = await fetch(`${apiUrl}/api/v1/analyzes`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${authToken}`,
         'Content-Type': 'application/json',
         'Idempotency-Key': idempotencyKey
       },

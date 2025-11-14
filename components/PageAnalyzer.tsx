@@ -33,12 +33,12 @@ export default function PageAnalyzer() {
 
   // Generate idempotency key
   const generateIdempotencyKey = () => {
-    return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`
   }
 
   // Generate request ID
   const generateRequestId = () => {
-    return `req-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    return `req-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`
   }
 
   // Initialize idempotency key on mount
@@ -69,7 +69,8 @@ export default function PageAnalyzer() {
     setLoading(true)
     setError(null)
     setResults(null)
-    setTimeRemaining(30)
+    // next URL need to use after 5 seconds, 5 second wait time to reduce server load.
+    setTimeRemaining(5)
     setTimerActive(true)
 
     try {
@@ -113,7 +114,7 @@ export default function PageAnalyzer() {
           <div className="flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-lg">
             <Clock className="w-4 h-4 text-blue-600" />
             <span className="text-sm font-medium text-blue-600">
-              Next key in: {timeRemaining}s
+              Wait time for next WebPage input in: {timeRemaining}s
             </span>
           </div>
         )}
@@ -123,14 +124,14 @@ export default function PageAnalyzer() {
         {/* Report Header */}
         <div className="mb-6">
           <h2 className="text-xl text-gray-700">
-            Report from {new Date().toLocaleDateString('en-US', { 
-              month: 'short', 
-              day: 'numeric', 
-              year: 'numeric' 
-            })}, {new Date().toLocaleTimeString('en-US', { 
-              hour: 'numeric', 
-              minute: '2-digit', 
-              hour12: true 
+            Report from {new Date().toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric'
+            })}, {new Date().toLocaleTimeString('en-US', {
+              hour: 'numeric',
+              minute: '2-digit',
+              hour12: true
             })}
           </h2>
         </div>
@@ -142,7 +143,8 @@ export default function PageAnalyzer() {
               type="text"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && analyzeUrl()}
+              // Replaced deprecated onKeyPress with onKeyDown
+              onKeyDown={(e) => e.key === 'Enter' && analyzeUrl()}
               placeholder="Enter web page URL"
               className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               disabled={loading}
@@ -249,7 +251,7 @@ export default function PageAnalyzer() {
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
                             <div className="flex-1 h-6 bg-gray-200 rounded-full overflow-hidden max-w-xs">
-                              <div 
+                              <div
                                 className="h-full bg-blue-500 transition-all rounded-full"
                                 style={{ width: `${Math.min((count / 10) * 100, 100)}%` }}
                               ></div>
@@ -302,8 +304,8 @@ export default function PageAnalyzer() {
                       <td className="px-6 py-4 text-sm font-semibold text-gray-900">{results.links.inaccessible}</td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                          results.links.inaccessible === 0 
-                            ? 'bg-green-100 text-green-800' 
+                          results.links.inaccessible === 0
+                            ? 'bg-green-100 text-green-800'
                             : 'bg-red-100 text-red-800'
                         }`}>
                           {results.links.inaccessible === 0 ? 'Good' : 'Issues Found'}
