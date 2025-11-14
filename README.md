@@ -76,7 +76,7 @@ The application will be accessible at http://localhost:3000.
 
 This application uses a multi-stage Docker build based on **Node 20-alpine** for efficient production deployment.
 
-#### Building and Running the Container
+### Building and Running the Container
 
 1.  **Build the image:**
     ```bash
